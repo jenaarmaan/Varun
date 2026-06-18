@@ -88,3 +88,6 @@ backend/reports/*.pdf
 *.pdf
 temp/
 tmp/
+*.mako
+*.py.mako
+

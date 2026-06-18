@@ -45,3 +45,15 @@ target-version = "py311"
 [tool.black]
 line-length = 88
 target-version = ['py311']
+
+[tool.pyrefly]
+python-interpreter-path = ".venv/Scripts/python.exe"
+use-ignore-files = true
+project-excludes = [
+    "**/__pyrefly_virtual__/**",
+    "**/inmemory/**",
+    "**/*.mako"
+]
+
+
+

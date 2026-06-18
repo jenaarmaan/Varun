@@ -1,0 +1,9 @@
+# Pyrefly backend configuration
+python-interpreter-path = ".venv/Scripts/python.exe"
+use-ignore-files = true
+project-excludes = [
+    "**/__pyrefly_virtual__/**",
+    "**/inmemory/**",
+    "**/*.mako",
+    ".venv/**"
+]
