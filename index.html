@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Varun - AI Weather Intelligence & Disaster Support</title>
+    <meta name="description" content="AI-powered Weather Intelligence and Disaster Decision Support Dashboard for critical infrastructure and river networks.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="glass-bg-glow"></div>
+    <div class="glass-bg-glow glow-secondary"></div>
+
+    <!-- App Shell -->
+    <div class="app-container">
+        <!-- Floating Navigation Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                        <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" class="sun-path"/>
+                        <path d="M18 16.5a4 4 0 0 1-3.5-3.5 4 4 0 0 1 3.5-3.5" class="cloud-shadow"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Project Varun</h1>
+                    <span class="logo-sub">Weather Intelligence</span>
+                </div>
+            </div>
+
+            <!-- Tab Navigation Links -->
+            <nav class="nav-tabs" role="tablist">
+                <button class="tab-btn active" id="tab-overview" role="tab" aria-selected="true" onclick="switchTab('overview')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                    Dashboard
+                </button>
+                <button class="tab-btn" id="tab-chat" role="tab" aria-selected="false" onclick="switchTab('chat')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    AI Assistant
+                </button>
+                <button class="tab-btn" id="tab-ingest" role="tab" aria-selected="false" onclick="switchTab('ingest')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><polyline points="16 5 21 5 21 10"/><line x1="12" y1="12" x2="21" y2="3"/></svg>
+                    Data Ingest
+                </button>
+            </nav>
+
+            <!-- Settings / Mode Switcher -->
+            <div class="header-controls">
+                <div class="mode-selector">
+                    <span class="mode-label">Sandbox Mode</span>
+                    <label class="switch" id="mode-toggle-switch">
+                        <input type="checkbox" id="mode-toggle" checked onchange="toggleMode()">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="api-status-indicator">
+                    <span class="status-dot online" id="status-dot"></span>
+                    <span class="status-text" id="status-text">Sandbox Active</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace Area -->
+        <main class="app-main">
+            
+            <!-- SECTION 1: OVERVIEW DASHBOARD -->
+            <section class="tab-content active" id="content-overview" role="tabpanel">
+                <div class="grid-layout">
+                    
+                    <!-- Col 1: Weather Map & Districts -->
+                    <div class="card glass-card span-col-2">
+                        <div class="card-header">
+                            <h2>Meteorological Risk Overlay</h2>
+                            <span class="badge warning" id="active-alert-badge">2 Active Warnings</span>
+                        </div>
+                        <div class="weather-map-container">
+                            <div class="map-grid">
+                                <!-- District 29 (Mysuru) Card representation -->
+                                <div class="district-node risk-red" id="district-29-card" onclick="selectDistrict('district_29')">
+                                    <div class="node-glow"></div>
+                                    <div class="district-info">
+                                        <span class="state-label">Karnataka</span>
+                                        <h3>Mysuru</h3>
+                                        <div class="weather-brief">
+                                            <span class="temp">29°C</span>
+                                            <span class="desc">Heavy Rain</span>
+                                        </div>
+                                    </div>
+                                    <div class="risk-meter">
+                                        <span class="meter-fill danger-fill" style="width: 88%"></span>
+                                        <span class="meter-text">Risk score: 88</span>
+                                    </div>
+                                </div>
+
+                                <!-- District 21 (Khordha/Bhubaneswar) Card representation -->
+                                <div class="district-node risk-amber" id="district-21-card" onclick="selectDistrict('district_21')">
+                                    <div class="node-glow"></div>
+                                    <div class="district-info">
+                                        <span class="state-label">Odisha</span>
+                                        <h3>Khordha (Bhubaneswar)</h3>
+                                        <div class="weather-brief">
+                                            <span class="temp">33°C</span>
+                                            <span class="desc">Thunderstorms</span>
+                                        </div>
+                                    </div>
+                                    <div class="risk-meter">
+                                        <span class="meter-fill warning-fill" style="width: 62%"></span>
+                                        <span class="meter-text">Risk score: 62</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Selected District Sidebar -->
+                            <div class="district-details-panel" id="district-details-panel">
+                                <div class="panel-placeholder" id="panel-placeholder">
+                                    <p>Click on a district node to view full GIS properties and coordinates.</p>
+                                </div>
+                                <div class="panel-details hidden" id="panel-details">
+                                    <div class="panel-title">
+                                        <h3 id="detail-name">Khordha</h3>
+                                        <span class="badge" id="detail-badge">Amber warning</span>
+                                    </div>
+                                    <ul class="detail-list">
+                                        <li><strong>LGD Code:</strong> <span id="detail-lgd">district_21</span></li>
+                                        <li><strong>State:</strong> <span id="detail-state">Odisha</span></li>
+                                        <li><strong>Population:</strong> <span id="detail-pop">2,251,000</span></li>
+                                        <li><strong>Forecast Source:</strong> <span id="detail-source">IMD Bulletin + OpenMeteo</span></li>
+                                        <li><strong>Geometry Centroid:</strong> <code id="detail-geom">POINT(85.82 20.29)</code></li>
+                                    </ul>
+                                    <div class="risk-description">
+                                        <h4>Downstream Vulnerability</h4>
+                                        <p id="detail-vulnerability">High probability of storm water drainage blockage. Low lying areas near connected rivers may expect light water logging.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Col 2: River Flow & Infrastructure Status -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h2>Critical Assets & Downstream Nodes</h2>
+                        </div>
+                        <div class="assets-network-view">
+                            <!-- Reservoir levels -->
+                            <div class="reservoir-status">
+                                <div class="reservoir-header">
+                                    <div class="status-indicator-icon">💧</div>
+                                    <div>
+                                        <h3>Krishna Raja Sagara</h3>
+                                        <span class="subtext">Reservoir • Mysuru, KA</span>
+                                    </div>
+                                </div>
+                                <div class="reservoir-level-container">
+                                    <div class="level-bar-background">
+                                        <div class="level-bar-fill warning" id="res-level-fill" style="width: 84.8%"></div>
+                                        <span class="level-text" id="res-level-text">124.8 ft / 124.8 ft Max</span>
+                                    </div>
+                                    <div class="reservoir-metrics">
+                                        <span>Capacity: <strong>49.45 TMC</strong></span>
+                                        <span>Status: <strong class="color-warning" id="res-status-label">Near Spill Limit</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- List of downstream critical assets -->
+                            <div class="assets-list-container">
+                                <h3>Critical Infrastructure downstream of flows</h3>
+                                <div class="asset-item risk-red">
+                                    <div class="asset-dot"></div>
+                                    <div class="asset-info">
+                                        <h4>Mysuru Public School</h4>
+                                        <span class="subtext">Downstream of KR Sagar • Shelter Cap: 400</span>
+                                    </div>
+                                    <span class="asset-alert-label">High Risk</span>
+                                </div>
+                                <div class="asset-item risk-red">
+                                    <div class="asset-dot"></div>
+                                    <div class="asset-info">
+                                        <h4>Mysuru Power Grid Substation</h4>
+                                        <span class="subtext">Downstream of KR Sagar • Voltage: 220kV</span>
+                                    </div>
+                                    <span class="asset-alert-label">High Risk</span>
+                                </div>
+                                <div class="asset-item risk-green">
+                                    <div class="asset-dot"></div>
+                                    <div class="asset-info">
+                                        <h4>Bhubaneswar General Hospital</h4>
+                                        <span class="subtext">Mahanadi Basin • Bed Cap: 500</span>
+                                    </div>
+                                    <span class="asset-alert-label">Safe</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: AI ASSISTANT CHAT -->
+            <section class="tab-content" id="content-chat" role="tabpanel">
+                <div class="chat-layout">
+                    <!-- Sidebar: Preset prompts and parameters -->
+                    <div class="chat-sidebar card glass-card">
+                        <div class="card-header">
+                            <h3>RAG System Parameters</h3>
+                        </div>
+                        <div class="param-box">
+                            <label for="chat-lang">Target Language</label>
+                            <select id="chat-lang" class="custom-select">
+                                <option value="en">English (en)</option>
+                                <option value="hi">Hindi (hi)</option>
+                            </select>
+                        </div>
+                        <div class="param-box border-top">
+                            <h4>Suggested Queries</h4>
+                            <div class="presets-container">
+                                <button class="preset-chip" onclick="applyPresetPrompt('What is the current safety level of Mysuru Public School?')">
+                                    🏫 Mysuru Public School Safety
+                                </button>
+                                <button class="preset-chip" onclick="applyPresetPrompt('Is Bhubaneswar General Hospital affected by the thunderstorms?')">
+                                    🏥 Bhubaneswar Hospital Alert
+                                </button>
+                                <button class="preset-chip" onclick="applyPresetPrompt('Show the water level and warning status of Krishna Raja Sagara reservoir.')">
+                                    🌊 KR Sagar Reservoir Status
+                                </button>
+                                <button class="preset-chip" onclick="applyPresetPrompt('Are there any active weather alerts for Odisha right now?')">
+                                    ⛈️ active alerts in Odisha
+                                </button>
+                            </div>
+                        </div>
+                        <div class="system-status-box">
+                            <span class="sys-label">Anti-Hallucination Guard</span>
+                            <span class="sys-val" style="color: var(--color-success)">ACTIVE (Threshold: 0.85)</span>
+                        </div>
+                    </div>
+
+                    <!-- Chat Window Area -->
+                    <div class="chat-window card glass-card">
+                        <div class="chat-header">
+                            <div class="chat-bot-avatar">AI</div>
+                            <div>
+                                <h3>Weather Intelligence Assistant</h3>
+                                <span class="subtext" id="chat-engine-subtext">Sandbox Mode (Mocked Grounding Context)</span>
+                            </div>
+                        </div>
+                        <!-- Messages Log -->
+                        <div class="chat-messages-container" id="chat-messages">
+                            <div class="message bot-message">
+                                <div class="message-content">
+                                    <p>Hello! I am your AI weather assistant. I monitor Project Varun's GIS nodes, river systems, and incoming meteorological forecasts.</p>
+                                    <p>How can I help you analyze risk or safety recommendations today?</p>
+                                </div>
+                                <span class="message-time">Just Now</span>
+                            </div>
+                        </div>
+                        <!-- Typing Indicator -->
+                        <div class="typing-indicator hidden" id="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <!-- User Input -->
+                        <div class="chat-input-bar">
+                            <input type="text" id="chat-input-field" placeholder="Ask a weather question (e.g. Is Mysuru Power Grid at risk?)..." onkeydown="handleChatKey(event)">
+                            <button class="send-btn" id="chat-send-button" onclick="sendChatMessage()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: DATA INGESTION -->
+            <section class="tab-content" id="content-ingest" role="tabpanel">
+                <div class="grid-layout">
+                    <!-- Left: Ingestion Forms -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h2>IMD Bulletin Upload</h2>
+                        </div>
+                        <div class="form-container">
+                            <p class="description">Upload daily official IMD Forecast PDFs. This triggers the multi-tier PDF parser and runs validations through the Data Quality Service (DQS).</p>
+                            <!-- Drag & Drop container -->
+                            <div class="upload-dropzone" id="pdf-dropzone" onclick="triggerFileInput()">
+                                <div class="upload-icon">📄</div>
+                                <h3>Drag & Drop Meteorological PDF here</h3>
+                                <p class="subtext">or click to browse files (Max 15MB)</p>
+                                <input type="file" id="pdf-file-input" class="hidden" accept=".pdf" onchange="handleFileSelected(event)">
+                            </div>
+                            <!-- Upload Status Details -->
+                            <div class="upload-status-box hidden" id="upload-status-box">
+                                <div class="status-header">
+                                    <span class="status-icon" id="upload-status-icon">🔄</span>
+                                    <h4 id="upload-status-title">Processing file...</h4>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" id="upload-progress" style="width: 0%"></div>
+                                </div>
+                                <div class="status-details-list" id="upload-details-list">
+                                    <!-- Dynamic details go here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Sync Grids & Live Logs -->
+                    <div class="card glass-card span-col-2">
+                        <div class="card-header">
+                            <h2>Open-Meteo API Synchronizer</h2>
+                        </div>
+                        <div class="sync-grid-container">
+                            <div class="sync-actions-panel">
+                                <p class="description">Trigger REST API fetches from Open-Meteo for all active district centroid nodes. Validates coordinates and updates PostgreSQL datasets.</p>
+                                <button class="sync-trigger-btn" id="sync-trigger-button" onclick="triggerSyncGrid()">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sync-btn-icon" id="sync-icon-svg"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                                    <span>Sync Open-Meteo Grid</span>
+                                </button>
+                                <div class="sync-meta-info" id="sync-meta-info">
+                                    <span>Last Sync: <strong id="last-sync-time">Never</strong></span>
+                                    <span>Nodes Synced: <strong id="synced-nodes-count">0</strong></span>
+                                </div>
+                            </div>
+
+                            <!-- Terminal console logger window -->
+                            <div class="console-logger">
+                                <div class="console-header">
+                                    <span class="console-title">Live Log Console</span>
+                                    <div class="console-buttons">
+                                        <span class="dot-btn red"></span>
+                                        <span class="dot-btn yellow"></span>
+                                        <span class="dot-btn green"></span>
+                                    </div>
+                                </div>
+                                <div class="console-lines" id="console-logs">
+                                    <div class="log-line system">[SYSTEM] Sandbox initialized. Ready for operations.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Script file -->
+    <script src="app.js"></script>
+</body>
+</html>
