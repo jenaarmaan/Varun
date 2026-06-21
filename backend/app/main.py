@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, status, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 import structlog
 
@@ -65,6 +65,12 @@ async def health_check():
         "timestamp": datetime.utcnow().isoformat(),
         "environment": settings.ENV
     }
+
+
+@app.get("/")
+async def root_redirect():
+    """Redirect root path to API docs."""
+    return RedirectResponse(url=f"{settings.API_V1_STR}/docs")
 
 
 from datetime import datetime
