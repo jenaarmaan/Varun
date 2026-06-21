@@ -1,5 +1,6 @@
 # Pyrefly workspace configuration
 python-interpreter-path = "backend/.venv/Scripts/python.exe"
+preset = "off"
 use-ignore-files = true
 project-excludes = [
     "**/__pyrefly_virtual__/**",
@@ -7,3 +8,4 @@ project-excludes = [
     "**/*.mako",
     "backend/.venv/**"
 ]
+
