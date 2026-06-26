@@ -157,7 +157,9 @@ function selectDistrict(districtId) {
 
     // Set badge warning text based on risk
     const badge = document.getElementById('detail-badge');
-    if (distData.riskScore > 80) {
+    const riskPercent = distData.riskScore;
+    
+    if (riskPercent > 80) {
         badge.className = 'badge warning';
         badge.innerText = 'Danger Warning';
         badge.style.background = 'rgba(239, 68, 68, 0.15)';
@@ -171,7 +173,156 @@ function selectDistrict(districtId) {
         badge.style.borderColor = 'rgba(245, 158, 11, 0.25)';
     }
 
-    logConsole(`Selected GIS Node: ${distData.name} (${distData.id})`);
+    // Dynamic Risk Meter update
+    const riskFill = document.getElementById('detail-risk-fill');
+    const riskText = document.getElementById('detail-risk-text');
+    riskFill.style.width = `${riskPercent}%`;
+    riskText.innerText = `Risk score: ${riskPercent}%`;
+    
+    if (riskPercent >= 75) {
+        riskFill.className = 'meter-fill danger-fill';
+    } else if (riskPercent >= 50) {
+        riskFill.className = 'meter-fill warning-fill';
+    } else {
+        riskFill.className = 'meter-fill';
+    }
+
+    // Populate SOP Checklist dynamically
+    const sopList = document.getElementById('detail-sop-list');
+    sopList.innerHTML = '';
+    let sops = [];
+    if (riskPercent >= 75) {
+        sops = [
+            "Activate District Emergency Operations Center (DEOC) to 24/7 alert status.",
+            "Initiate immediate evacuation plans for identified low-lying zones.",
+            "Pre-position NDRF and SDRF rescue units.",
+            "Activate emergency shelters and deploy dry food/medical resources.",
+            "Trigger broadcast public warning alerts."
+        ];
+    } else if (riskPercent >= 50) {
+        sops = [
+            "Place emergency response teams (NDRF/SDRF) on 1-hour standby.",
+            "Direct reservoir managers to monitor inflows and prepare controlled discharges.",
+            "Issue warnings to coastal fishermen to cease operations.",
+            "Conduct checks on critical communication networks and power backups."
+        ];
+    } else if (riskPercent >= 25) {
+        sops = [
+            "Monitor district telemetry station data hourly.",
+            "Instruct local administrative blocks (Taluks) to inspect flood embankments.",
+            "Notify community leaders of potential heavy weather anomalies."
+        ];
+    } else {
+        sops = [
+            "Routine meteorological forecast monitoring active.",
+            "No emergency actions required."
+        ];
+    }
+    sops.forEach((action, idx) => {
+        const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.gap = '8px';
+        li.style.alignItems = 'flex-start';
+        li.innerHTML = `<input type="checkbox" id="sop-check-${idx}" style="margin-top: 3px; cursor: pointer;"> <label for="sop-check-${idx}" style="cursor: pointer; line-height: 1.3;">${action}</label>`;
+        sopList.appendChild(li);
+    });
+
+    logConsole(`Selected GIS Node: ${distData.name} (${distData.id}). Risk: ${riskPercent}%`);
+}
+
+// Download Situation Report PDF (triggers API or falls back in sandbox)
+async function downloadSituationReport() {
+    const districtId = state.selectedDistrict;
+    if (!districtId) {
+        alert("Please select a district first.");
+        return;
+    }
+
+    const distData = state.districts[districtId];
+    const officerName = prompt(`Generate official Situation Report for ${distData.name}.\nEnter officer name:`, "Duty Officer") || "Duty Officer";
+
+    logConsole(`Compiling weather situation report for ${distData.name}...`);
+
+    try {
+        const response = await fetch('/api/v1/reports/compile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                district_code: districtId,
+                officer_name: officerName
+            })
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `SitRep_${distData.name.replace(/\s+/g, '_')}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            logConsole(`Situation Report PDF successfully downloaded for ${distData.name}.`, "success");
+        } else {
+            throw new Error(`Server returned HTTP ${response.status}`);
+        }
+    } catch (err) {
+        logConsole(`Backend compiling offline or bypassed: ${err.message}`, "info");
+        logConsole("Triggering Sandbox Client-side report generation fallback...", "warning");
+        triggerMockPdfDownload(distData, officerName);
+    }
+}
+
+// Sandbox/Offline Local Text SitRep Downloader
+function triggerMockPdfDownload(distData, officerName) {
+    const reportText = `========================================================================
+WEATHER SITUATION REPORT - ${distData.name.toUpperCase()}
+========================================================================
+Date Generated: ${new Date().toISOString()}
+Prepared By: ${officerName}
+Status: SANDBOX PILOT DEMO / EMERGENCY USE ONLY
+
+1. Meteorological Forecast Summary
+----------------------------------
+District: ${distData.name} (${distData.id})
+State: ${distData.state}
+Population: ${distData.population}
+Forecast Rain: ${distData.id === 'district_29' ? '124.8 mm' : '62.0 mm'}
+Warning Level: ${distData.id === 'district_29' ? 'RED' : 'AMBER'}
+
+2. Hazard Risk Evaluation
+-------------------------
+Calculated Flood Risk Score: ${distData.riskScore}%
+Vulnerability details: ${distData.vulnerability}
+
+3. Recommended NDMA SOP Actions
+-------------------------------
+${distData.riskScore >= 75 ? 
+`[ ] 1. Activate District Emergency Operations Center (DEOC) to 24/7 alert status.
+[ ] 2. Initiate immediate evacuation plans for identified low-lying zones.
+[ ] 3. Pre-position NDRF and SDRF rescue units.
+[ ] 4. Activate emergency shelters and deploy dry food/medical resources.
+[ ] 5. Trigger broadcast public warning alerts.` :
+`[ ] 1. Place emergency response teams (NDRF/SDRF) on 1-hour standby.
+[ ] 2. Direct reservoir managers to monitor inflows and prepare controlled discharges.
+[ ] 3. Issue warnings to coastal fishermen to cease operations.
+[ ] 4. Conduct checks on critical communication networks and power backups.`
+}
+
+Disclaimer: This report was compiled automatically in Sandbox Mode by Project Varun.
+========================================================================`;
+
+    const blob = new Blob([reportText], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `SitRep_${distData.name.replace(/\s+/g, '_')}_Sandbox.txt`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    logConsole(`Mock Situation Report compiled and downloaded: SitRep_${distData.name.replace(/\s+/g, '_')}_Sandbox.txt.`, "success");
 }
 
 // Preset Prompt Click

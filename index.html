@@ -133,9 +133,28 @@
                                         <li><strong>Forecast Source:</strong> <span id="detail-source">IMD Bulletin + OpenMeteo</span></li>
                                         <li><strong>Geometry Centroid:</strong> <code id="detail-geom">POINT(85.82 20.29)</code></li>
                                     </ul>
-                                    <div class="risk-description">
+                                    <div class="risk-description" style="margin-bottom: 16px;">
                                         <h4>Downstream Vulnerability</h4>
                                         <p id="detail-vulnerability">High probability of storm water drainage blockage. Low lying areas near connected rivers may expect light water logging.</p>
+                                    </div>
+                                    <div class="detail-risk-score-box" style="margin-bottom: 16px;">
+                                        <strong style="font-size: 0.85rem; color: var(--text-secondary);">Calculated Flood Risk</strong>
+                                        <div class="risk-meter" style="margin-top: 6px; height: 18px; border-radius: 9px; background: rgba(255,255,255,0.06);">
+                                            <span id="detail-risk-fill" class="meter-fill danger-fill" style="width: 0%"></span>
+                                            <span id="detail-risk-text" class="meter-text">Risk score: 0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="sop-checklist-box" style="margin-bottom: 20px;">
+                                        <strong style="font-size: 0.85rem; color: var(--text-secondary);">Recommended NDMA SOP Actions</strong>
+                                        <ul class="sop-list" id="detail-sop-list" style="list-style: none; margin-top: 8px; padding-left: 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.8rem; color: var(--text-secondary);">
+                                            <!-- Dynamic items populated by app.js -->
+                                        </ul>
+                                    </div>
+                                    <div class="report-action-box">
+                                        <button class="download-report-btn" id="download-report-button" onclick="downloadSituationReport()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 10px; background: var(--accent-glow); color: #050b14; font-family: var(--font-heading); font-weight: 600; font-size: 0.88rem; border: none; cursor: pointer; transition: var(--transition-smooth); box-shadow: 0 4px 15px rgba(0, 242, 254, 0.25);">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                            <span>Download SitRep PDF</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>

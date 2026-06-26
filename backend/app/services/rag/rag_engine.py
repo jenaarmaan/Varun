@@ -29,6 +29,9 @@ class WeatherRAGEngine:
         """
         Executes RAG pipeline: Cache lookup -> Context Retrieval -> Gemini Reasoning -> Safety check.
         """
+        import time
+        start_time = time.time()
+
         # 1. Redis Cache Lookup
         cache_key = self._generate_cache_key(query, language)
         if self.redis_client:
@@ -63,7 +66,32 @@ class WeatherRAGEngine:
             "from the India Meteorological Department (IMD). Verify critical warnings directly on official government portals."
         )
 
-        # 5. Populate Redis Cache
+        latency = time.time() - start_time
+
+        # 5. MLOps RAG Evaluation logging
+        try:
+            from app.services.evaluation.eval_service import AIEvaluationService
+            eval_service = AIEvaluationService(self.db)
+            
+            # Format context records into string chunks for the evaluation service
+            context_chunks = []
+            for r in context_data:
+                context_chunks.append(
+                    f"District: {r.get('district_name')}, Rainfall: {r.get('rainfall_mm')} mm, Warning: {r.get('warning_level')}"
+                )
+            
+            # Run evaluation (saves log to DB)
+            eval_metrics = await eval_service.evaluate_response(
+                query=query,
+                response_text=rag_response.get("answer", ""),
+                context_chunks=context_chunks,
+                latency_sec=round(latency, 3)
+            )
+            rag_response["evaluation"] = eval_metrics
+        except Exception as eval_err:
+            logger.warn("MLOps RAG evaluation logging bypassed or failed", error=str(eval_err))
+
+        # 6. Populate Redis Cache
         if self.redis_client and rag_response.get("status") != "fallback":
             try:
                 self.redis_client.setex(

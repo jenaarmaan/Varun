@@ -1,11 +1,13 @@
 from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
 import structlog
 
 from app.core.config import settings
 from app.api.v1.ingest import router as ingest_router
 from app.api.v1.chat import router as chat_router
+from app.api.v1.reports import router as reports_router
 
 # Configure structured JSON logging
 structlog.configure(
@@ -35,6 +37,7 @@ app.add_middleware(
 # Register routers under /api/v1
 app.include_router(ingest_router, prefix=f"{settings.API_V1_STR}/ingest", tags=["Ingestion"])
 app.include_router(chat_router, prefix=f"{settings.API_V1_STR}/chat", tags=["Conversational Chat"])
+app.include_router(reports_router, prefix=f"{settings.API_V1_STR}/reports", tags=["Reports"])
 
 
 # Global HTTP Exception Handler
@@ -73,4 +76,4 @@ async def root_redirect():
     return RedirectResponse(url=f"{settings.API_V1_STR}/docs")
 
 
-from datetime import datetime
+
