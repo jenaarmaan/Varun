@@ -144,6 +144,13 @@
                                             <span id="detail-risk-text" class="meter-text">Risk score: 0%</span>
                                         </div>
                                     </div>
+                                    <div class="detail-hvi-box" style="margin-bottom: 16px;">
+                                        <strong style="font-size: 0.85rem; color: var(--text-secondary);">Human Vulnerability Index (HVI)</strong>
+                                        <div class="risk-meter" style="margin-top: 6px; height: 18px; border-radius: 9px; background: rgba(255,255,255,0.06);">
+                                            <span id="detail-hvi-fill" class="meter-fill" style="width: 0%; background: linear-gradient(90deg, #00f2fe 0%, #3b82f6 100%); box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);"></span>
+                                            <span id="detail-hvi-text" class="meter-text">HVI Score: 0.00</span>
+                                        </div>
+                                    </div>
                                     <div class="sop-checklist-box" style="margin-bottom: 20px;">
                                         <strong style="font-size: 0.85rem; color: var(--text-secondary);">Recommended NDMA SOP Actions</strong>
                                         <ul class="sop-list" id="detail-sop-list" style="list-style: none; margin-top: 8px; padding-left: 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.8rem; color: var(--text-secondary);">
@@ -242,11 +249,11 @@
                                 <button class="preset-chip" onclick="applyPresetPrompt('What is the current safety level of Mysuru Public School?')">
                                     🏫 Mysuru Public School Safety
                                 </button>
-                                <button class="preset-chip" onclick="applyPresetPrompt('Is Bhubaneswar General Hospital affected by the thunderstorms?')">
-                                    🏥 Bhubaneswar Hospital Alert
+                                <button class="preset-chip" onclick="applyPresetPrompt('Run a cross-modal risk synthesis report for Mysuru.')">
+                                    🌎 Cross-Modal Risk Synthesis (Mysuru)
                                 </button>
-                                <button class="preset-chip" onclick="applyPresetPrompt('Show the water level and warning status of Krishna Raja Sagara reservoir.')">
-                                    🌊 KR Sagar Reservoir Status
+                                <button class="preset-chip" onclick="applyPresetPrompt('Perform a Human Vulnerability Index (HVI) threat analysis for Bhubaneswar.')">
+                                    🧬 HVI Threat Analysis (Bhubaneswar)
                                 </button>
                                 <button class="preset-chip" onclick="applyPresetPrompt('Are there any active weather alerts for Odisha right now?')">
                                     ⛈️ active alerts in Odisha

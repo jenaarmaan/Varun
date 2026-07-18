@@ -48,3 +48,26 @@ class ImpactPredictionEngine:
         )
         
         return round(score, 3)
+
+    def calculate_human_vulnerability_index(
+        self,
+        flood_risk_score: float,
+        population: int
+    ) -> float:
+        """
+        Calculates the Human Vulnerability Index (HVI).
+        Scales the basic flood risk score by the population density/size factor.
+        HVI = flood_risk_score * (0.7 + 0.3 * min(population / 1000000.0, 1.0))
+        """
+        scale_factor = min(population / 1000000.0, 1.0)
+        hvi = flood_risk_score * (0.7 + 0.3 * scale_factor)
+        
+        logger.info(
+            "Calculated Human Vulnerability Index (HVI)",
+            risk_score=flood_risk_score,
+            population=population,
+            scale_factor=round(scale_factor, 3),
+            hvi=round(hvi, 3)
+        )
+        return round(hvi, 3)
+

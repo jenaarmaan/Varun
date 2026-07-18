@@ -187,6 +187,18 @@ function selectDistrict(districtId) {
         riskFill.className = 'meter-fill';
     }
 
+    // Dynamic Human Vulnerability Index (HVI) calculation
+    const popVal = parseInt(distData.population.replace(/,/g, ''), 10) || 0;
+    const riskScoreDec = riskPercent / 100.0;
+    const scaleFactor = Math.min(popVal / 1000000.0, 1.0);
+    const hviVal = riskScoreDec * (0.7 + 0.3 * scaleFactor);
+    const hviPercent = Math.round(hviVal * 100);
+
+    const hviFill = document.getElementById('detail-hvi-fill');
+    const hviText = document.getElementById('detail-hvi-text');
+    hviFill.style.width = `${hviPercent}%`;
+    hviText.innerText = `HVI Score: ${hviVal.toFixed(2)} (${hviPercent}%)`;
+
     // Populate SOP Checklist dynamically
     const sopList = document.getElementById('detail-sop-list');
     sopList.innerHTML = '';
@@ -276,6 +288,10 @@ async function downloadSituationReport() {
 
 // Sandbox/Offline Local Text SitRep Downloader
 function triggerMockPdfDownload(distData, officerName) {
+    const popVal = parseInt(distData.population.replace(/,/g, ''), 10) || 0;
+    const scaleFactor = Math.min(popVal / 1000000.0, 1.0);
+    const hviVal = (distData.riskScore / 100.0) * (0.7 + 0.3 * scaleFactor);
+
     const reportText = `========================================================================
 WEATHER SITUATION REPORT - ${distData.name.toUpperCase()}
 ========================================================================
@@ -294,6 +310,7 @@ Warning Level: ${distData.id === 'district_29' ? 'RED' : 'AMBER'}
 2. Hazard Risk Evaluation
 -------------------------
 Calculated Flood Risk Score: ${distData.riskScore}%
+Human Vulnerability Index (HVI): ${hviVal.toFixed(2)} (scaled by population)
 Vulnerability details: ${distData.vulnerability}
 
 3. Recommended NDMA SOP Actions
